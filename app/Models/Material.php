@@ -13,7 +13,7 @@ class Material extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'role_user');
+        return $this->belongsToMany(Product::class, 'product_and_materials');
     }
     public function warehouses()
     {

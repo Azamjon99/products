@@ -8,18 +8,14 @@ use Illuminate\Support\Facades\App;
 
 class BaseController extends Controller
 {
-    public function successResponse($result = [], $message, $data = null)
+    public function successResponse($result = [], $data = null)
     {
         $response = [
-
             'result' => $result,
         ];
-
         if ($data){
             $response['extra'] = $data;
         }
-
-
         return response()->json($response, 200);
     }
 
