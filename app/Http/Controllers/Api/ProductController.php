@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 class ProductController extends BaseController
 {
     protected $calculate;
-    protected $arr;
 
     public function __construct(CalculateRemainer $calculate)
     {
@@ -24,13 +23,22 @@ class ProductController extends BaseController
         $array =$request->all();
         $keys= collect($array)->keys();
         $products = Product::whereIn('code', $keys)->get();
-        // return  $this->successResponse(ProductCollection::collection($products), 'Products');
+        if ($products->isEmpty())
+        {
+            return $this->errorResponse([], 'Product not found');
+        }
+        $arr=  $this->formatArray($products, $array);
+        return  $this->successResponse($arr);
+    }
+
+    public function formatArray($products, $array)
+    {
         foreach($products as $product)
         {
         $number = $array[$product->code];
         $arr[]= ['product_name'=>$product->name, 'product_qty'=>$number, 'product_materials'=>$this->calculate->calculate($product, $number)];
         }
-        return  $this->successResponse($arr);
+        return $arr;
     }
 
 

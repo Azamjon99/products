@@ -20,7 +20,7 @@ class CalculateRemainer
 
             $this->quantity = $qtn->quantity * $number;
 
-            $warehouses = Warehouse::with('materials')->where('material_id', $qtn->material_id)->get();
+            $warehouses = $this->dataFromDb($qtn->material_id);
             if(!$this->checkKey($qtn->material_id,$this->total  ))
             {
                 $this->total[$qtn->material_id]= $warehouses->sum('remainder');
@@ -32,24 +32,19 @@ class CalculateRemainer
                 if($this->checkRemainerBig($warehouse, $qtn))
                 {
                     // $this->changeRemainer($warehouse, $qtn, $product);
-
                     $arr[] =$this->makeArray($warehouse, $this->quantity, $product);
                     $this->changeRemainer($warehouse, $qtn, $product);
-
                     break;
                 }
                 elseif($this->checkRemainerLess($warehouse, $qtn))
                 {
                     $arr[] =$this->makeArray($warehouse, $this->remainer[$warehouse->id][$qtn->material_id], $product);
                     $this->changeQuantity($warehouse, $qtn);
-
                 }
                 if($this->checkRemainerEqual($qtn)){
                     $this->stopLoop($warehouse, $qtn);
                     $arr[] = $this->makeArray($warehouse, $this->quantity, $product);
-
                     break;
-
                 }
              }
             }
@@ -111,6 +106,11 @@ class CalculateRemainer
         $warehouse->id= null;
         $warehouse->price= null;
 
+    }
+    public function dataFromDb($id)
+    {
+        $warehouses = Warehouse::with('materials')->where('material_id', $id)->get();
+        return $warehouses;
     }
 
 
